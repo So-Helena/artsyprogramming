@@ -1,4 +1,4 @@
-in exposing (..)
+module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -6,16 +6,16 @@ import Html.Events exposing (..)
 
 
 main =
-        beginnerProgram { model = initModel, view = view, update = update }
+    beginnerProgram { model = initModel, view = view, update = update }
 
 
 initModel : Model
-    initModel =
-            { name = ""
-                , age = 0
-                    , sexuality = Nothing
-                        , savedpersons = []
-                            }
+initModel =
+    { name = ""
+    , age = 0
+    , sexuality = Nothing
+    , savedpersons = []
+    }
 
 
 
@@ -24,25 +24,25 @@ initModel : Model
 
 type Sexuality
     = PanSexual
-        | HomoSexual
-            | ASexual
-                | BiSexual
-                    | Other
+    | HomoSexual
+    | ASexual
+    | BiSexual
+    | Other
 
 
 type alias Person =
-        { name : String
-            , age : Int
-                , sexuality : Sexuality
-                    }
+    { name : String
+    , age : Int
+    , sexuality : Sexuality
+    }
 
 
 type alias Model =
-        { name : String
-            , age : Int
-                , sexuality : Maybe Sexuality
-                    , savedpersons : List Person
-                        }
+    { name : String
+    , age : Int
+    , sexuality : Maybe Sexuality
+    , savedpersons : List Person
+    }
 
 
 
@@ -51,68 +51,68 @@ type alias Model =
 
 type Msg
     = Namechange String
-        | Agechange String
-            | SexChange String
-                | SexClear
-                    | Submit
+    | Agechange String
+    | SexChange String
+    | SexClear
+    | Submit
 
 
 update : Msg -> Model -> Model
 update msg model =
-        case msg of
-                    Namechange newName ->
-                                    { model | name = newName }
+    case msg of
+        Namechange newName ->
+            { model | name = newName }
 
         Agechange newAge ->
-                        let
-                                            newInt =
-                                                                    Result.withDefault 0 (String.toInt newAge)
-                                                                                in
-                                                                                                    { model | age = newInt }
+            let
+                newInt =
+                    Result.withDefault 0 (String.toInt newAge)
+            in
+                { model | age = newInt }
 
         SexChange sexuality ->
-                        { model | sexuality = Just (updateSexuality sexuality) }
+            { model | sexuality = Just (updateSexuality sexuality) }
 
         SexClear ->
-                        { model | sexuality = Nothing }
+            { model | sexuality = Nothing }
 
         Submit ->
-                        case model.sexuality of
-                                            Nothing ->
-                                                                    model
+            case model.sexuality of
+                Nothing ->
+                    model
 
                 Just sexuality ->
-                                        let
-                                                                    newPerson =
-                                                                                                    { name = model.name
-                                                                                                                                , age = model.age
-                                                                                                                                                            , sexuality = sexuality
-                                                                                                                                                                                        }
-                                                                                                                                                                                                            in
-                                                                                                                                                                                                                                        { model | savedpersons = newPerson :: model.savedpersons }
+                    let
+                        newPerson =
+                            { name = model.name
+                            , age = model.age
+                            , sexuality = sexuality
+                            }
+                    in
+                        { model | savedpersons = newPerson :: model.savedpersons }
 
 
 updateSexuality : String -> Sexuality
 updateSexuality text =
-        let
-                    firstchar =
-                                    String.left 1 text
-                                        in
-                                                    case firstchar of
-                                                                    "p" ->
-                                                                                        PanSexual
+    let
+        firstchar =
+            String.left 1 text
+    in
+        case firstchar of
+            "p" ->
+                PanSexual
 
             "h" ->
-                                HomoSexual
+                HomoSexual
 
             "a" ->
-                                ASexual
+                ASexual
 
             "b" ->
-                                BiSexual
+                BiSexual
 
             _ ->
-                                Other
+                Other
 
 
 
@@ -121,53 +121,52 @@ updateSexuality text =
 
 view : Model -> Html Msg
 view model =
-        div []
-                [ input [ placeholder "name", value model.name, onInput Namechange ] []
-                        , input [ placeholder "age", value (toString model.age), onInput Agechange ] []
-                                , input [ placeholder "sexuality", value (viewSexualityValue model.sexuality), onInput SexChange ] []
-                                        , button [ onClick Submit ] [ text "submit" ]
-                                                , button [ onClick SexClear ] [ text "clear sexuality" ]
-                                                        , viewPersons model.savedpersons
-                                                                ]
+    div []
+        [ input [ placeholder "name", value model.name, onInput Namechange ] []
+        , input [ placeholder "age", value (toString model.age), onInput Agechange ] []
+        , input [ placeholder "sexuality", value (viewSexualityValue model.sexuality), onInput SexChange ] []
+        , button [ onClick Submit ] [ text "submit" ]
+        , button [ onClick SexClear ] [ text "clear sexuality" ]
+        , viewPersons model.savedpersons
+        ]
 
 
 viewSexualityValue : Maybe Sexuality -> String
 viewSexualityValue modelSexuality =
-        case modelSexuality of
-                    Nothing ->
-                                    ""
+    case modelSexuality of
+        Nothing ->
+            ""
 
         Just sexuality ->
-                        toString sexuality
+            toString sexuality
 
 
 viewPersons : List Person -> Html msg
 viewPersons persons =
-        div [] (List.map viewPerson persons)
+    div [] (List.map viewPerson persons)
 
 
 viewPerson : Person -> Html msg
 viewPerson person =
-        case person.sexuality of
-                    PanSexual ->
-                                    viewSexuality "red" "good times being pansexual"
+    case person.sexuality of
+        PanSexual ->
+            viewSexuality "red" "good times being pansexual"
 
         HomoSexual ->
-                        viewSexuality "green" "i love being homo"
+            viewSexuality "green" "i love being homo"
 
         ASexual ->
-                        viewSexuality "blue" "i don't like anything"
+            viewSexuality "blue" "i don't like anything"
 
         BiSexual ->
-                        viewSexuality "yellow" "i swing both ways"
+            viewSexuality "yellow" "i swing both ways"
 
         Other ->
-                        viewSexuality "purple" "im confused"
+            viewSexuality "purple" "im confused"
 
 
 viewSexuality : String -> String -> Html msg
 viewSexuality color description =
-        div
-                [ style [ ( "color", color ) ] ]
-                        [ text description ]
-                        
+    div
+        [ style [ ( "color", color ) ] ]
+        [ text description ]
